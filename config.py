@@ -93,7 +93,7 @@ Beshariq ↔️ Toshkent yo'nalishida:
 ✅ Yo'lovchi topish  
 ✅ Pochta jo'natish
 
-🤖 Bu guruhda elon yaratish uchun bu bo't dan foydalaning 👉 @beshariq_tax_bot """
+🤖 Bu guruhda elon yaratish uchun bu bo't dan foydalaning 👉  @beshariq_tax_bot """
 
 # Avtomatik javob xabarlari (admin bo'lgan guruh/kanallar uchun)
 AUTO_REPLY_MESSAGES = {

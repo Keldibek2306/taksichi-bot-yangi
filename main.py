@@ -85,10 +85,10 @@ from handlers.common_handlers import (
     confirm_callback
 )
 
-# Logging sozlash
+# Logging sozlash - faqat muhim xabarlar
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    format='%(message)s',
+    level=logging.WARNING  # Faqat WARNING va yuqori darajadagi xabarlar
 )
 logger = logging.getLogger(__name__)
 
@@ -132,8 +132,6 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     user_id = update.effective_user.id
     state = order_manager.get_state(user_id)
     
-    logger.info(f"📝 handle_text_message: user_id={user_id}, state={state}")
-    
     if state == States.PASSENGER_PHONE:
         # Yo'lovchi telefon raqamini kiritmoqda
         await passenger_phone_handler(update, context)
@@ -164,7 +162,6 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await update.message.delete()
         except:
             pass
-        logger.warning(f"⚠️ handle_text_message: Unknown state {state}")
 
 async def handle_contact_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -179,8 +176,6 @@ async def handle_contact_message(update: Update, context: ContextTypes.DEFAULT_T
     user_id = update.effective_user.id
     state = order_manager.get_state(user_id)
     
-    logger.info(f"📱 handle_contact_message: user_id={user_id}, state={state}")
-    
     if state == States.PASSENGER_PHONE:
         # Yo'lovchi telefon raqamini jo'natmoqda
         await passenger_phone_handler(update, context)
@@ -192,10 +187,6 @@ async def handle_contact_message(update: Update, context: ContextTypes.DEFAULT_T
     elif state == States.PACKAGE_PHONE:
         # Pochta jo'natuvchi telefon raqamini jo'natmoqda
         await package_phone_handler(update, context)
-    
-    else:
-        # Noma'lum holat
-        logger.warning(f"⚠️ handle_contact_message: Unknown state {state}")
 
 async def universal_direction_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -213,16 +204,12 @@ async def universal_direction_callback(update: Update, context: ContextTypes.DEF
     user_id = query.from_user.id
     state = order_manager.get_state(user_id)
     
-    logger.info(f"📍 universal_direction_callback: user_id={user_id}, state={state}")
-    
     if state == States.PASSENGER_DIRECTION:
         await passenger_direction_callback(update, context)
     elif state == States.DRIVER_DIRECTION:
         await driver_direction_callback(update, context)
     elif state == States.PACKAGE_DIRECTION:
         await package_direction_callback(update, context)
-    else:
-        logger.error(f"❌ universal_direction_callback: Wrong state {state}")
 
 async def universal_count_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -239,14 +226,10 @@ async def universal_count_callback(update: Update, context: ContextTypes.DEFAULT
     user_id = query.from_user.id
     state = order_manager.get_state(user_id)
     
-    logger.info(f"👥 universal_count_callback: user_id={user_id}, state={state}")
-    
     if state == States.PASSENGER_COUNT:
         await passenger_count_callback(update, context)
     elif state == States.DRIVER_SEATS:
         await driver_seats_callback(update, context)
-    else:
-        logger.error(f"❌ universal_count_callback: Wrong state {state}")
 
 async def universal_comment_choice_callback_legacy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -263,9 +246,6 @@ async def universal_comment_choice_callback_legacy(update: Update, context: Cont
     
     user_id = query.from_user.id
     state = order_manager.get_state(user_id)
-    choice = query.data  # "yes" yoki "no"
-    
-    logger.info(f"💬 universal_comment_choice_callback_legacy: user_id={user_id}, state={state}, choice={choice}")
     
     # Legacy code - faqat yes/no kelganda ishlaydi
     if state == States.PASSENGER_COMMENT_CHOICE:
@@ -274,8 +254,6 @@ async def universal_comment_choice_callback_legacy(update: Update, context: Cont
         await driver_comment_choice_callback(update, context)
     elif state == States.PACKAGE_COMMENT_CHOICE:
         await package_comment_choice_callback(update, context)
-    else:
-        logger.error(f"❌ universal_comment_choice_callback_legacy: Wrong state {state}")
 
 async def universal_confirm_callback_legacy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -291,9 +269,6 @@ async def universal_confirm_callback_legacy(update: Update, context: ContextType
     
     user_id = query.from_user.id
     state = order_manager.get_state(user_id)
-    choice = query.data  # "confirm_yes" yoki "confirm_no"
-    
-    logger.info(f"✅ universal_confirm_callback_legacy: user_id={user_id}, state={state}, choice={choice}")
     
     if state == States.PASSENGER_CONFIRM:
         await passenger_confirm_callback(update, context)
@@ -301,8 +276,6 @@ async def universal_confirm_callback_legacy(update: Update, context: ContextType
         await driver_confirm_callback(update, context)
     elif state == States.PACKAGE_CONFIRM:
         await package_confirm_callback(update, context)
-    else:
-        logger.error(f"❌ universal_confirm_callback_legacy: Wrong state {state}")
 
 async def send_advertisement_to_main_group(context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -313,9 +286,8 @@ async def send_advertisement_to_main_group(context: ContextTypes.DEFAULT_TYPE) -
             chat_id=MAIN_GROUP_ID,
             text=AD_MESSAGE
         )
-        logger.info(f"Advertisement sent to MAIN_GROUP at {datetime.now()}")
     except Exception as e:
-        logger.error(f"Error sending advertisement to MAIN_GROUP: {e}")
+        pass  # Xatoliklarni e'tiborsiz qoldirish
 
 async def send_advertisement_to_all_groups(context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -330,7 +302,6 @@ async def send_advertisement_to_all_groups(context: ContextTypes.DEFAULT_TYPE) -
         admin_chats = get_admin_chats()
         
         if not admin_chats:
-            logger.info("No admin chats found for advertisements")
             return
         
         # Reklama xabari
@@ -341,10 +312,15 @@ Beshariq ↔️ Toshkent yo'nalishida:
 ✅ Yo'lovchilarni toping
 ✅ Pochta jo'nating
 
-🤖 @{bot_username} shu bo'ttan foydalaning """
+🤖 @{bot_username} shu bo'tdan foydalaning !
+
+👨‍💻BIZBILAN BOG'LANISH UCHUN 👇
+📞+998944483134
+📞+998903061414
+
+"""
         
         # Har bir guruhga yuborish
-        sent_count = 0
         for chat_id in admin_chats:
             # MAIN_GROUP ga alohida yuboriladi, uni skip qilamiz
             if chat_id == MAIN_GROUP_ID:
@@ -356,15 +332,11 @@ Beshariq ↔️ Toshkent yo'nalishida:
                     text=ad_text,
                     disable_web_page_preview=True
                 )
-                sent_count += 1
             except Exception as e:
-                logger.error(f"Error sending ad to chat {chat_id}: {e}")
-        
-        if sent_count > 0:
-            logger.info(f"Advertisement sent to {sent_count} admin groups/channels at {datetime.now()}")
+                pass  # Xatoliklarni e'tiborsiz qoldirish
     
     except Exception as e:
-        logger.error(f"Error in send_advertisement_to_all_groups: {e}")
+        pass  # Xatoliklarni e'tiborsiz qoldirish
 
 async def setup_advertisement_jobs(application: Application) -> None:
     """
@@ -379,35 +351,22 @@ async def setup_advertisement_jobs(application: Application) -> None:
     job_queue.run_repeating(
         send_advertisement_to_main_group,
         interval=MAIN_GROUP_AD_INTERVAL,
-        first=1  # Birinchi marta 10 soniyadan keyin
+        first=3  # Birinchi marta 10 soniyadan keyin
     )
     
     # 2. Barcha admin guruh/kanallarga har 5 minutda reklama
     job_queue.run_repeating(
         send_advertisement_to_all_groups,
         interval=ALL_GROUPS_AD_INTERVAL,
-        first=2  # Birinchi marta 30 soniyadan keyin
+        first=5  # Birinchi marta 30 soniyadan keyin
     )
-    
-    logger.info("Advertisement jobs set up successfully")
-    logger.info(f"- MAIN_GROUP: every {MAIN_GROUP_AD_INTERVAL} seconds")
-    logger.info(f"- All admin groups: every {ALL_GROUPS_AD_INTERVAL} seconds")
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Xatoliklarni qayta ishlash
     """
-    logger.error(f"Exception while handling an update: {context.error}")
-    
-    # Agar update mavjud bo'lsa va foydalanuvchiga xabar yuborish mumkin bo'lsa
-    if isinstance(update, Update) and update.effective_user:
-        try:
-            await context.bot.send_message(
-                chat_id=update.effective_user.id,
-                text="❌ Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring yoki /start bosing."
-            )
-        except Exception as e:
-            logger.error(f"Could not send error message to user: {e}")
+    # Xatoliklarni e'tiborsiz qoldirish - hech narsa chiqarmaymiz
+    pass
 
 def main() -> None:
     """
@@ -485,9 +444,7 @@ def main() -> None:
     )
     
     # Botni ishga tushirish
-    logger.info("Bot is starting...")
-    logger.info("Auto-reply enabled for admin groups/channels")
-    logger.info("Advertisement jobs scheduled")
+    print("✅ Bot muvaffaqiyatli ishga tushdi!")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":

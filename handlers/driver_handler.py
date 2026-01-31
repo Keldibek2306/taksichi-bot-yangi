@@ -106,8 +106,6 @@ async def driver_seats_callback(update: Update, context: ContextTypes.DEFAULT_TY
         chat_id=user_id,
         text="Telefon raqamingizni quyidagi formatlarda kiriting:\n"
              "• +998901234567\n"
-             "• 998901234567\n"
-             "• 901234567\n\n"
              "Yoki tugma orqali jo'nating:",
         reply_markup=phone_keyboard
     )
@@ -119,14 +117,14 @@ async def driver_phone_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     """
     user_id = update.effective_user.id
     
-    print(f"🚕 DEBUG: driver_phone_handler chaqirildi. User: {user_id}")
+    #print(f"🚕 DEBUG: driver_phone_handler chaqirildi. User: {user_id}")
     
     # Tekshirish: Faqat DRIVER_PHONE state dagi foydalanuvchilar uchun
     current_state = order_manager.get_state(user_id)
-    print(f"🚕 DEBUG: Current state: {current_state}, Expected: {States.DRIVER_PHONE}")
+    #print(f"🚕 DEBUG: Current state: {current_state}, Expected: {States.DRIVER_PHONE}")
     
     if current_state != States.DRIVER_PHONE:
-        print(f"🚕 DEBUG: Wrong state, ignoring")
+        #print(f"🚕 DEBUG: Wrong state, ignoring")
         return
     
     phone = None
@@ -144,20 +142,18 @@ async def driver_phone_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
         
         phone = contact.phone_number
-        print(f"🚕 DEBUG: Contact phone received: {phone}")
+        #print(f"🚕 DEBUG: Contact phone received: {phone}")
         
     # 2. Agar text yuborilgan bo'lsa
     elif update.message.text:
         text = update.message.text.strip()
-        print(f"🚕 DEBUG: Text received: {text}")
+        #print(f"🚕 DEBUG: Text received: {text}")
         
         # Agar "Raqamni yozib yuborish" tanlangan bo'lsa
         if text == "📝 Raqamni yozib yuborish":
             await update.message.reply_text(
                 "📱 Telefon raqamingizni quyidagi formatlarda kiriting:\n\n"
                 "• +998901234567\n"
-                "• 998901234567\n"
-                "• 901234567\n\n"
                 "Yoki qaytadan tugmani bosing:",
                 reply_markup=ReplyKeyboardMarkup(
                     [[KeyboardButton("📞 Telefon raqamimni jo'natish", request_contact=True)]],
@@ -169,7 +165,7 @@ async def driver_phone_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         
         # Telefon raqamni tozalash
         cleaned = re.sub(r'\D', '', text)
-        print(f"🚕 DEBUG: Cleaned phone: {cleaned}")
+        #print(f"🚕 DEBUG: Cleaned phone: {cleaned}")
         
         # Validatsiya
         if len(cleaned) == 9 and cleaned.startswith(('90', '91', '93', '94', '95', '97', '98', '99')):
@@ -182,9 +178,7 @@ async def driver_phone_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             await update.message.reply_text(
                 f"❌ Noto'g'ri telefon raqami: {text}\n\n"
                 "Iltimos, quyidagi formatlarda kiriting:\n"
-                "• +998901234567\n"
-                "• 998901234567\n"
-                "• 901234567",
+                "• +998901234567\n",
                 reply_markup=ReplyKeyboardMarkup(
                     [
                         [KeyboardButton("📞 Telefon raqamimni jo'natish", request_contact=True)],
@@ -195,11 +189,11 @@ async def driver_phone_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             )
             return
     else:
-        print(f"🚕 DEBUG: Neither contact nor text")
+        #print(f"🚕 DEBUG: Neither contact nor text")
         return
     
     if phone:
-        print(f"🚕 DEBUG: Phone to save: {phone}")
+        #print(f"🚕 DEBUG: Phone to save: {phone}")
         
         # Telefon raqamni saqlash
         order_manager.set_user_data(user_id, "phone", phone)
@@ -238,11 +232,11 @@ async def driver_comment_choice_callback(update: Update, context: ContextTypes.D
     user_id = query.from_user.id
     choice = query.data  # "comment_yes" yoki "comment_no"
     
-    print(f"🚕 DEBUG: driver_comment_choice_callback: choice={choice}")
+    #print(f"🚕 DEBUG: driver_comment_choice_callback: choice={choice}")
     
     # ✅ O'ZGARTIRILDI: comment_yes/comment_no tekshiriladi
     if choice == "comment_yes":
-        print(f"🚕 DEBUG: comment_yes selected")
+        #print(f"🚕 DEBUG: comment_yes selected")
         # Qo'shimcha ma'lumot yozishni so'rash
         order_manager.set_state(user_id, States.DRIVER_COMMENT)
         
@@ -263,7 +257,7 @@ async def driver_comment_choice_callback(update: Update, context: ContextTypes.D
     
     # ✅ O'ZGARTIRILDI: comment_no tekshiriladi
     elif choice == "comment_no":
-        print(f"🚕 DEBUG: comment_no selected")
+        #print(f"🚕 DEBUG: comment_no selected")
         # Qo'shimcha ma'lumot yo'q - to'g'ridan-to'g'ri tasdiqlashga
         order_manager.set_user_data(user_id, "comment", "")
         order_manager.set_state(user_id, States.DRIVER_CONFIRM)
@@ -295,7 +289,7 @@ async def driver_comment_handler(update: Update, context: ContextTypes.DEFAULT_T
     # Tekshirish: Faqat DRIVER_COMMENT state dagi foydalanuvchilar uchun
     current_state = order_manager.get_state(user_id)
     if current_state != States.DRIVER_COMMENT:
-        print(f"🚕 DEBUG: driver_comment_handler: Wrong state {current_state}")
+        #print(f"🚕 DEBUG: driver_comment_handler: Wrong state {current_state}")
         return
     
     comment = update.message.text.strip()
@@ -351,11 +345,11 @@ async def driver_confirm_callback(update: Update, context: ContextTypes.DEFAULT_
         group_text = "🚕 YANGI E'LON - TAKSICHI\n\n"
         group_text += f"📍 Yo'nalish: {DIRECTIONS[direction]}\n"
         group_text += f"💺 Bo'sh joylar: {seats} kishi\n"
-        group_text += f"📞 Telefon: {phone}\n"
+        group_text += f"📞 Telefon: +{phone}\n"
         group_text += f"👤 Haydovchi: {username}\n"
         if comment:
             group_text += f"💬 Izoh: {comment}\n"
-        group_text += f"⏰ Vaqt: {time_str}"
+        group_text += f"⏰Elon yaratilgan vaqt: {time_str}"
         
         # Guruhga yuborish (band qilish tugmasi YO'Q!)
         try:
@@ -372,7 +366,7 @@ async def driver_confirm_callback(update: Update, context: ContextTypes.DEFAULT_
             )
             
         except Exception as e:
-            print(f"❌ Error sending to group: {e}")
+            #print(f"❌ Error sending to group: {e}")
             await query.edit_message_text(
                 "❌ Guruhga yuborishda xatolik. Iltimos, qayta urinib ko'ring.",
                 reply_markup=get_main_menu_keyboard()

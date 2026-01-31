@@ -86,34 +86,46 @@ class States(IntEnum):
     PACKAGE_CONFIRM = 19
 
 # Reklama xabari matni (MAIN_GROUP uchun)
-AD_MESSAGE = """🚖 TAKSI VA POCHTA XIZMATI
-
-Beshariq ↔️ Toshkent yo'nalishida:
+AD_MESSAGE = """🚖 TEZ VA OSON TAKSI  VA YO'LO'VCHI TOPISH UCHUN  !
 ✅ Taksi chaqirish
 ✅ Yo'lovchi topish  
 ✅ Pochta jo'natish
 
-🤖 Bu guruhda elon yaratish uchun bu bo't dan foydalaning 👉  @beshariq_tax_bot """
+🤖 Bu guruhda elon yaratish uchun bu bo't dan foydalaning 👉   @beshariq_tax_bot 
+
+👨‍💻BIZBILAN BOG'LANISH UCHUN 👇
+📞+998944483134
+📞+998903061414
+"""
 
 # Avtomatik javob xabarlari (admin bo'lgan guruh/kanallar uchun)
 AUTO_REPLY_MESSAGES = {
-    "taksi": """🚖 TEZ VA OSON TAKSI TOPISH UCHUN!
+    "taksi": """🚖 TEZ VA OSON TAKSI  VA YO'LO'VCHI TOPISH UCHUN  !
 
 Bizning bot orqali:
 ✅ Tez taksi chaqiring
-✅ Yo'lovchilar bilan bog'laning
+✅ Tez Yo'lovchilar topish 
 ✅ Ishonchli xizmat
 
-🤖 @{bot_username}  bo'tdan foydalaning """,
+🤖 @{bot_username}  bo'tdan foydalaning 
+👨‍💻BIZBILAN BOG'LANISH UCHUN 👇
+📞+998944483134
+📞+998903061414
+""",
     
-    "yolovchi": """👥 TEZ VA OSON YO'LOVCHI TOPISH UCHUN!
+    "yolovchi": """🚖 TEZ VA OSON TAKSI  VA YO'LO'VCHI TOPISH UCHUN  !
 
 Bizning bot orqali:
 ✅ Yo'lovchilarni toping
 ✅ Tez buyurtma bering
 ✅ Qulay narxlar
 
-🤖 @{bot_username} bo'tdan foydalaning """,
+🤖 @{bot_username} bo'tdan foydalaning 
+👨‍💻BIZBILAN BOG'LANISH UCHUN 👇
+📞+998944483134
+📞+998903061414
+ """
+,
     
     "umumiy": """🚖 TAKSI VA YO'LOVCHI TOPISH UCHUN!
 
@@ -122,12 +134,18 @@ Bizning bot orqali:
 ✅ Yo'lovchilarni toping
 ✅ Pochta jo'nating
 
-🤖 @{bot_username} bo'tdan foydalaning """
+🤖 @{bot_username} bo'tdan foydalaning 
+
+👨‍💻BIZBILAN BOG'LANISH UCHUN 👇
+📞+998944483134
+📞+998903061414
+
+"""
 }
 
 # Reklama intervali (soniyalarda)
-MAIN_GROUP_AD_INTERVAL = 400  # 15 minut (MAIN_GROUP uchun)
-ALL_GROUPS_AD_INTERVAL = 700  # 5 minut (barcha admin bo'lgan guruhlar uchun)
+MAIN_GROUP_AD_INTERVAL = 3600  # 15 minut (MAIN_GROUP uchun)
+ALL_GROUPS_AD_INTERVAL = 180  # 5 minut (barcha admin bo'lgan guruhlar uchun)
 
 # Avtomatik javob uchun kalit so'zlar
 AUTO_REPLY_KEYWORDS = {

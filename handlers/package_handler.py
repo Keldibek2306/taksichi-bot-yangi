@@ -136,10 +136,7 @@ async def package_weight_callback(update: Update, context: ContextTypes.DEFAULT_
         text="📱 Telefon raqamingizni yuboring:\n\n"
              "• 📞 Tugma orqali jo'natish - OSON USUL\n"
              "• 📝 Raqamni yozib yuborish\n\n"
-             "📝 Formatlar:\n"
-             "✅ +998 90 123 45 67\n"
-             "✅ 998901234567\n"
-             "✅ 901234567",
+             "📝 Formatlar:\n",
         reply_markup=phone_keyboard
     )
 
@@ -149,14 +146,14 @@ async def package_phone_handler(update: Update, context: ContextTypes.DEFAULT_TY
     """
     user_id = update.effective_user.id
     
-    print(f"📞 DEBUG: package_phone_handler chaqirildi. User: {user_id}")
+    #print(f"📞 DEBUG: package_phone_handler chaqirildi. User: {user_id}")
     
     # Tekshirish: Faqat PACKAGE_PHONE state dagi foydalanuvchilar uchun
     current_state = order_manager.get_state(user_id)
-    print(f"📞 DEBUG: Current state: {current_state}, Expected: {States.PACKAGE_PHONE}")
+    #print(f"📞 DEBUG: Current state: {current_state}, Expected: {States.PACKAGE_PHONE}")
     
     if current_state != States.PACKAGE_PHONE:
-        print(f"📞 DEBUG: Wrong state, ignoring")
+        #print(f"📞 DEBUG: Wrong state, ignoring")
         return
     
     phone = None
@@ -174,20 +171,18 @@ async def package_phone_handler(update: Update, context: ContextTypes.DEFAULT_TY
             return
         
         phone = contact.phone_number
-        print(f"📞 DEBUG: Contact phone received: {phone}")
+        #print(f"📞 DEBUG: Contact phone received: {phone}")
         
     # 2. Agar text yuborilgan bo'lsa
     elif update.message.text:
         text = update.message.text.strip()
-        print(f"📞 DEBUG: Text received: {text}")
+        #print(f"📞 DEBUG: Text received: {text}")
         
         # Agar "Raqamni yozib yuborish" tanlangan bo'lsa
         if text == "📝 Raqamni yozib yuborish":
             await update.message.reply_text(
                 "📱 Telefon raqamingizni quyidagi formatlarda kiriting:\n\n"
                 "• +998901234567\n"
-                "• 998901234567\n"
-                "• 901234567\n\n"
                 "Yoki qaytadan tugmani bosing:",
                 reply_markup=ReplyKeyboardMarkup(
                     [[KeyboardButton("📞 Telefon raqamimni jo'natish", request_contact=True)]],
@@ -199,7 +194,7 @@ async def package_phone_handler(update: Update, context: ContextTypes.DEFAULT_TY
         
         # Telefon raqamni tozalash
         cleaned = re.sub(r'\D', '', text)
-        print(f"📞 DEBUG: Cleaned phone: {cleaned}")
+        #print(f"📞 DEBUG: Cleaned phone: {cleaned}")
         
         # Validatsiya
         if len(cleaned) == 9 and cleaned.startswith(('90', '91', '93', '94', '95', '97', '98', '99')):
@@ -212,9 +207,7 @@ async def package_phone_handler(update: Update, context: ContextTypes.DEFAULT_TY
             await update.message.reply_text(
                 f"❌ Noto'g'ri telefon raqami: {text}\n\n"
                 "Iltimos, quyidagi formatlarda kiriting:\n"
-                "• +998901234567\n"
-                "• 998901234567\n"
-                "• 901234567",
+                "• +998901234567\n",
                 reply_markup=ReplyKeyboardMarkup(
                     [
                         [KeyboardButton("📞 Telefon raqamimni jo'natish", request_contact=True)],
@@ -225,11 +218,11 @@ async def package_phone_handler(update: Update, context: ContextTypes.DEFAULT_TY
             )
             return
     else:
-        print(f"📞 DEBUG: Neither contact nor text")
+        #print(f"📞 DEBUG: Neither contact nor text")
         return
     
     if phone:
-        print(f"📞 DEBUG: Phone to save: {phone}")
+        #print(f"📞 DEBUG: Phone to save: {phone}")
         
         # Telefon raqamni saqlash
         order_manager.set_user_data(user_id, "phone", phone)
@@ -258,7 +251,7 @@ async def package_phone_handler(update: Update, context: ContextTypes.DEFAULT_TY
                  "💬 Qo'shimcha ma'lumot yozasizmi?",
             reply_markup=get_yes_no_keyboard()  # ✅ get_yes_no_keyboard() ishlatildi
         )
-        print(f"📞 DEBUG: Sent yes/no question")
+        #print(f"📞 DEBUG: Sent yes/no question")
 
 async def package_comment_choice_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
@@ -270,7 +263,7 @@ async def package_comment_choice_callback(update: Update, context: ContextTypes.
     user_id = query.from_user.id
     choice = query.data  # "comment_yes" yoki "comment_no"
     
-    print(f"📝 DEBUG: Comment choice callback: {choice}")
+    #print(f"📝 DEBUG: Comment choice callback: {choice}")
     
     # ✅ O'ZGARTIRILDI: comment_yes/comment_no tekshiriladi
     if choice == "comment_yes":
@@ -329,7 +322,7 @@ async def package_comment_handler(update: Update, context: ContextTypes.DEFAULT_
     # Tekshirish: Faqat PACKAGE_COMMENT state dagi foydalanuvchilar uchun
     current_state = order_manager.get_state(user_id)
     if current_state != States.PACKAGE_COMMENT:
-        print(f"📝 DEBUG: package_comment_handler: Wrong state {current_state}")
+        #print(f"📝 DEBUG: package_comment_handler: Wrong state {current_state}")
         return
     
     comment = update.message.text.strip()
@@ -389,11 +382,11 @@ async def package_confirm_callback(update: Update, context: ContextTypes.DEFAULT
         group_text += f"📍 Yo'nalish: {DIRECTIONS[direction]}\n"
         group_text += f"📋 Pochta turi: {PACKAGE_TYPES[pkg_type]}\n"
         group_text += f"⚖️ Og'irligi: {weight} kg\n"
-        group_text += f"📞 Telefon: {phone}\n"
+        group_text += f"📞 Telefon: +{phone}\n"
         group_text += f"👤 Foydalanuvchi: {username}\n"
         if comment:
             group_text += f"💬 Izoh: {comment}\n"
-        group_text += f"⏰ Vaqt: {time_str}"
+        group_text += f"⏰ Elon yaratilgan vaqt: {time_str}"
         
         # Guruhga yuborish
         try:
@@ -429,7 +422,7 @@ async def package_confirm_callback(update: Update, context: ContextTypes.DEFAULT
             )
             
         except Exception as e:
-            print(f"❌ Error sending to group: {e}")
+            #print(f"❌ Error sending to group: {e}")
             await query.edit_message_text(
                 "❌ Guruhga yuborishda xatolik. Iltimos, qayta urinib ko'ring.",
                 reply_markup=get_main_menu_keyboard()
